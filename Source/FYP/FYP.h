@@ -1,8 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#ifndef FYP_H
-#define FYP_H
+#pragma once
 
 #include "CoreMinimal.h"
 
-#endif
