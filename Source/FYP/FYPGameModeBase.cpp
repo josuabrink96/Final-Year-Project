@@ -11,8 +11,7 @@ AFYPGameModeBase::AFYPGameModeBase()
     PrimaryActorTick.bAllowTickOnDedicatedServer = false;
 
     static ConstructorHelpers::FClassFinder<APawn> PlayerCharacterBP(TEXT("Blueprint'/Game/PlayerCharacter_BP.PlayerCharacter_BP_C'"));
-    if (PlayerCharacterBP.Class != NULL)
-    {
-        DefaultPawnClass = PlayerCharacterBP.Class;
-    }
+    check(PlayerCharacterBP.Class != nullptr);
+    DefaultPawnClass = PlayerCharacterBP.Class;
+    
 }

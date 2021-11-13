@@ -6,12 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "FYPGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class FYP_API AFYPGameModeBase : public AGameModeBase
-{
+class FYP_API AFYPGameModeBase : public AGameModeBase {
 	GENERATED_BODY()
 		AFYPGameModeBase();
 };
