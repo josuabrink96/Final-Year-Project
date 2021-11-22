@@ -2,7 +2,7 @@
 
 
 #include "FYPGameModeBase.h"
-#include "PlayerCharacter.h"
+
 
 AFYPGameModeBase::AFYPGameModeBase()
 {
@@ -13,5 +13,7 @@ AFYPGameModeBase::AFYPGameModeBase()
     static ConstructorHelpers::FClassFinder<APawn> PlayerCharacterBP(TEXT("Blueprint'/Game/PlayerCharacter_BP.PlayerCharacter_BP_C'"));
     check(PlayerCharacterBP.Class != nullptr);
     DefaultPawnClass = PlayerCharacterBP.Class;
+
+    HUDClass = ACharacterHud::StaticClass();
     
 }

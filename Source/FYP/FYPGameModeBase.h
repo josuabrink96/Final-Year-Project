@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "CharacterHud.h"
+#include "PlayerCharacter.h"
 #include "FYPGameModeBase.generated.h"
 
 UCLASS()
