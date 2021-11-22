@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Projectile.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -20,6 +21,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+		TSubclassOf<class AProjectile> ProjectileClass;
 
 public:	
 	// Called every frame
@@ -40,9 +44,16 @@ public:
 	UFUNCTION()
 		void StopJump();
 
+	UFUNCTION()
+		void Fire();
+
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FPCameraComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USkeletalMeshComponent* FPMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		FVector MuzzleOffset;
+
 };
