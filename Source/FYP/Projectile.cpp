@@ -12,6 +12,8 @@ AProjectile::AProjectile()
 	if (!CollisionComponent)
 	{
 		CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+		CollisionComponent->BodyInstance.SetCollisionProfileName("Projectile");
+		CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 		CollisionComponent->InitSphereRadius(15.0f);
 		RootComponent = CollisionComponent;
 	}
@@ -23,9 +25,8 @@ AProjectile::AProjectile()
 		ProjectileMovementComponent->MaxSpeed = 3000.0f;
 		ProjectileMovementComponent->bRotationFollowsVelocity = true;
 		ProjectileMovementComponent->bShouldBounce = true;
-		ProjectileMovementComponent->Bounciness = 0.3f;
+		ProjectileMovementComponent->Bounciness = 0.3f;	
 		ProjectileMovementComponent->ProjectileGravityScale = 1.0f;
-		ProjectileMovementComponent->StopMovementImmediately();
 	}
 	if (!ProjectileMeshComponent)
 	{
@@ -35,21 +36,16 @@ AProjectile::AProjectile()
 		{
 			ProjectileMeshComponent->SetStaticMesh(Mesh.Object);
 		}
+
+		static ConstructorHelpers::FObjectFinder<UMaterial>Material(TEXT("'/Game/SphereMaterial.SphereMaterial'"));
+		if (Material.Succeeded())
+		{
+			ProjectileMaterialInstance = UMaterialInstanceDynamic::Create(Material.Object, ProjectileMeshComponent);
+		}
+		ProjectileMeshComponent->SetMaterial(0, ProjectileMaterialInstance);
+		ProjectileMeshComponent->SetRelativeScale3D(FVector(0.09f, 0.09f, 0.09f));
+		ProjectileMeshComponent->SetupAttachment(RootComponent);
 	}
-
-	static ConstructorHelpers::FObjectFinder<UMaterial>Material(TEXT("'/Game/SphereMaterial.SphereMaterial'"));
-	if (Material.Succeeded())
-	{
-		ProjectileMaterialInstance = UMaterialInstanceDynamic::Create(Material.Object, ProjectileMeshComponent);
-	}
-	ProjectileMeshComponent->SetMaterial(0, ProjectileMaterialInstance);
-	ProjectileMeshComponent->SetRelativeScale3D(FVector(0.09f, 0.09f, 0.09f));
-	ProjectileMeshComponent->SetupAttachment(RootComponent);
-
-	// Delete the projectile after 3 seconds.
-	InitialLifeSpan = 3.0f;
-
-	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
 }
 
 // Called when the game starts or when spawned
@@ -71,10 +67,5 @@ void AProjectile::FireInDirection(const FVector& ShootDirection)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
-	{
-		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
-	}
 
-	Destroy();
 }

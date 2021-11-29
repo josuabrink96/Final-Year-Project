@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Projectile.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -14,9 +15,9 @@ class FYP_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	APlayerCharacter();
+private:
+	AProjectile* Projectile;
+	bool hasFired = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,7 +27,8 @@ protected:
 		TSubclassOf<class AProjectile> ProjectileClass;
 
 public:	
-	// Called every frame
+	APlayerCharacter();
+
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
@@ -46,6 +48,12 @@ public:
 
 	UFUNCTION()
 		void Fire();
+
+	UFUNCTION()
+		void Teleport();
+
+	UFUNCTION()
+		void Recall();
 
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FPCameraComponent;

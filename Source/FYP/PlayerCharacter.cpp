@@ -50,6 +50,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJump);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::Fire);
+	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &APlayerCharacter::Teleport);
+	PlayerInputComponent->BindAction("Recall", IE_Pressed, this, &APlayerCharacter::Recall);
 }
 
 void APlayerCharacter::MoveForwardBack(float val)
@@ -76,21 +78,16 @@ void APlayerCharacter::StopJump()
 
 void APlayerCharacter::Fire()
 {
-	// Attempt to fire a projectile.
-	if (ProjectileClass)
+	if (ProjectileClass && !hasFired)
 	{
-		// Get the camera transform.
+		hasFired = true;
 		FVector CameraLocation;
 		FRotator CameraRotation;
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
-		// Set MuzzleOffset to spawn projectiles slightly in front of the camera.
 		MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
-
-		// Transform MuzzleOffset from camera space to world space.
 		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
 
-		// Skew the aim to be slightly upwards.
 		FRotator MuzzleRotation = CameraRotation;
 		MuzzleRotation.Pitch += 10.0f;
 
@@ -102,7 +99,7 @@ void APlayerCharacter::Fire()
 			SpawnParams.Instigator = GetInstigator();
 
 			// Spawn the projectile at the muzzle.
-			AProjectile* Projectile = World->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+			Projectile = World->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
 			if (Projectile)
 			{
 				// Set the projectile's initial trajectory.
@@ -110,5 +107,21 @@ void APlayerCharacter::Fire()
 				Projectile->FireInDirection(LaunchDirection);
 			}
 		}
+	}
+}
+
+void APlayerCharacter::Teleport() {
+	if (hasFired) {
+		this->SetActorLocation(Projectile->GetActorLocation());
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Teleported to ball."));
+		this->Recall();
+	}
+}
+
+void APlayerCharacter::Recall() {
+	if (hasFired) {
+		hasFired = false;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Ball recalled."));
+		Projectile->Destroy();
 	}
 }
