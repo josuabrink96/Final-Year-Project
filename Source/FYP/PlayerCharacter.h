@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Projectile.h"
+#include "PathPoint.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "PlayerCharacter.generated.h"
 
@@ -16,8 +17,12 @@ class FYP_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 private:
+	std::vector<APathPoint*> trajectory;
 	AProjectile* Projectile;
+	APathPoint* PathPoint;
 	bool hasFired = false;
+	bool aiming = false;
+	bool pathSpawned = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,6 +31,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 		TSubclassOf<class AProjectile> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Actor)
+		TSubclassOf<class APathPoint> PathPointClass;
+
 public:	
 	APlayerCharacter();
 
@@ -33,6 +41,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	FVector getMuzzleLocation();
 
 	UFUNCTION()
 		void MoveForwardBack(float val);
@@ -48,6 +58,9 @@ public:
 
 	UFUNCTION()
 		void Fire();
+
+	UFUNCTION()
+		void Aim();
 
 	UFUNCTION()
 		void Teleport();
