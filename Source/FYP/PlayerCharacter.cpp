@@ -34,6 +34,37 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (aiming && !hasFired) {
+		for (auto& t : trajectory) {
+			t->Destroy();
+		}
+		trajectory.clear();
+
+		FPredictProjectilePathParams params;
+		FPredictProjectilePathResult result;
+
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+		MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
+		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
+		FRotator MuzzleRotation = CameraRotation;
+		MuzzleRotation.Pitch += 10.0f;
+
+		params.StartLocation = MuzzleLocation;
+		params.LaunchVelocity = MuzzleRotation.Vector() * 2000.0f;
+		params.MaxSimTime = 2.0f;
+
+		UGameplayStatics::PredictProjectilePath(Projectile, params, result);
+		UWorld* World = GetWorld();
+		if (World) {
+			for (auto& p : result.PathData) {
+				PathPoint = World->SpawnActor<APathPoint>(p.Location, CameraRotation);
+				trajectory.emplace_back(PathPoint);
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -49,7 +80,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerCharacter::StopJump);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::Fire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::Aim);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::Fire);
+
 	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &APlayerCharacter::Teleport);
 	PlayerInputComponent->BindAction("Recall", IE_Pressed, this, &APlayerCharacter::Recall);
 }
@@ -77,10 +110,23 @@ void APlayerCharacter::StopJump()
 	bPressedJump = false;
 }
 
+void APlayerCharacter::Aim() {
+	if (!aiming) {
+		aiming = true;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Aiming..."));
+	}
+}
+
 void APlayerCharacter::Fire()
 {
 	if (ProjectileClass && !hasFired)
-	{
+	{	
+		for (auto& t : trajectory) {
+			t->Destroy();
+		}
+		trajectory.clear();
+
+		aiming = false;
 		hasFired = true;
 		FVector CameraLocation;
 		FRotator CameraRotation;
