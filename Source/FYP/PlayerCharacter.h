@@ -22,7 +22,6 @@ private:
 	APathPoint* PathPoint;
 	bool hasFired = false;
 	bool aiming = false;
-	bool pathSpawned = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,9 +29,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 		TSubclassOf<class AProjectile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = Actor)
-		TSubclassOf<class APathPoint> PathPointClass;
 
 public:	
 	APlayerCharacter();

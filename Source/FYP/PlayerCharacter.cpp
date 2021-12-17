@@ -121,11 +121,12 @@ void APlayerCharacter::Fire()
 {
 	if (ProjectileClass && !hasFired)
 	{	
-		aiming = false;
 		for (auto& t : trajectory) {
 			t->Destroy();
 		}
 		trajectory.clear();
+
+		aiming = false;
 		hasFired = true;
 		FVector CameraLocation;
 		FRotator CameraRotation;
