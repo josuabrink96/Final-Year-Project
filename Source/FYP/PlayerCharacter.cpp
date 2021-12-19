@@ -34,20 +34,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (aiming && !hasFired) {
-		for (auto& t : trajectory) {
-			t->Destroy();
-		}
-		trajectory.clear();
+	if (status == Aiming) {
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
 		FPredictProjectilePathParams params;
 		FPredictProjectilePathResult result;
 
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-		MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
+		MuzzleOffset.Set(100.0f, 100.0f, 0.0f);
 		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
 		FRotator MuzzleRotation = CameraRotation;
 		MuzzleRotation.Pitch += 10.0f;
@@ -56,12 +49,19 @@ void APlayerCharacter::Tick(float DeltaTime)
 		params.LaunchVelocity = MuzzleRotation.Vector() * 2000.0f;
 		params.MaxSimTime = 2.0f;
 
-		UGameplayStatics::PredictProjectilePath(Projectile, params, result);
 		UWorld* World = GetWorld();
-		if (World) {
-			for (auto& p : result.PathData) {
-				PathPoint = World->SpawnActor<APathPoint>(p.Location, CameraRotation);
-				trajectory.emplace_back(PathPoint);
+		if (World) 
+		{
+			UGameplayStatics::PredictProjectilePath(World, params, result);
+			pos.clear();
+			for (const auto& p : result.PathData) {
+				pos.emplace_back(p.Location);
+			}
+
+			int i = 0;
+			for (const auto& t : trajectory) {
+				t->SetActorLocation(pos.at(i));
+				i++;
 			}
 		}
 	}
@@ -111,30 +111,33 @@ void APlayerCharacter::StopJump()
 }
 
 void APlayerCharacter::Aim() {
-	if (!aiming) {
-		aiming = true;
+	if (status == Idle) {
+		status = Aiming;
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Aiming..."));
+
+		UWorld* World = GetWorld();
+		if (World) {
+			for (auto& p : pos) {
+				PathPoint = World->SpawnActor<APathPoint>(p, CameraRotation);
+				trajectory.emplace_back(PathPoint);
+			}
+		}
 	}
 }
 
 void APlayerCharacter::Fire()
 {
-	if (ProjectileClass && !hasFired)
+	if (ProjectileClass && status == Aiming)
 	{	
+		status = Fired;
 		for (auto& t : trajectory) {
 			t->Destroy();
 		}
 		trajectory.clear();
 
-		aiming = false;
-		hasFired = true;
-		FVector CameraLocation;
-		FRotator CameraRotation;
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-
-		MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
+		MuzzleOffset.Set(100.0f, 100.0f, 0.0f);
 		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-
 		FRotator MuzzleRotation = CameraRotation;
 		MuzzleRotation.Pitch += 10.0f;
 
@@ -158,7 +161,7 @@ void APlayerCharacter::Fire()
 }
 
 void APlayerCharacter::Teleport() {
-	if (hasFired) {
+	if (status == Fired) {
 		this->SetActorLocation(Projectile->GetActorLocation());
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Teleported to ball."));
 		this->Recall();
@@ -166,8 +169,8 @@ void APlayerCharacter::Teleport() {
 }
 
 void APlayerCharacter::Recall() {
-	if (hasFired) {
-		hasFired = false;
+	if (status == Fired) {
+		status = Idle;
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Ball recalled."));
 		Projectile->Destroy();
 	}

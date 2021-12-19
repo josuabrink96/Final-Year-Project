@@ -17,11 +17,19 @@ class FYP_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 private:
+	enum fireStatus {
+		Idle,
+		Aiming,
+		Fired,
+	};
+
 	std::vector<APathPoint*> trajectory;
+	std::vector<FVector> pos;
+	FVector CameraLocation;
+	FRotator CameraRotation;
 	AProjectile* Projectile;
 	APathPoint* PathPoint;
-	bool hasFired = false;
-	bool aiming = false;
+	fireStatus status = Idle;
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,8 +45,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	FVector getMuzzleLocation();
 
 	UFUNCTION()
 		void MoveForwardBack(float val);

@@ -13,13 +13,25 @@ APathPoint::APathPoint()
 	VisualMesh->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereAsset(TEXT("/Game/MyContent/Meshes/TrajectoryPoint.TrajectoryPoint"));
-
 	if (sphereAsset.Succeeded())
 	{
 		VisualMesh->SetStaticMesh(sphereAsset.Object);
 		VisualMesh->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		VisualMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterial>Material(TEXT("/Game/MyContent/Materials/Trajectory.Trajectory"));
+	if (Material.Succeeded()) 
+	{
+		PathPointMaterial = UMaterialInstanceDynamic::Create(Material.Object, VisualMesh);
+		VisualMesh->SetMaterial(0, PathPointMaterial);
+	}
+
+}
+
+APathPoint::~APathPoint() {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Garbage Collection."));
 }
 
 // Called when the game starts or when spawned
