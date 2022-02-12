@@ -14,7 +14,6 @@ class FYP_API APathPoint : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APathPoint();
-	~APathPoint();
 
 protected:
 	// Called when the game starts or when spawned

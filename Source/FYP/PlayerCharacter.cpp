@@ -85,6 +85,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &APlayerCharacter::Teleport);
 	PlayerInputComponent->BindAction("Recall", IE_Pressed, this, &APlayerCharacter::Recall);
+
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::Pause);
 }
 
 void APlayerCharacter::MoveForwardBack(float val)
@@ -175,3 +177,9 @@ void APlayerCharacter::Recall() {
 		Projectile->Destroy();
 	}
 }
+
+void APlayerCharacter::Pause() {
+	ACharacterHud* myHud = Cast<ACharacterHud>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+	myHud->openPauseMenu();
+}
+
