@@ -14,6 +14,7 @@ AFYPGameModeBase::AFYPGameModeBase()
     check(PlayerCharacterBP.Class != nullptr);
     DefaultPawnClass = PlayerCharacterBP.Class;
 
-    HUDClass = ACharacterHud::StaticClass();
-    
+    static ConstructorHelpers::FClassFinder<AHUD> HudBP(TEXT("Blueprint'/Game/MyContent/UI/MyCharacterHud_BP.MyCharacterHud_BP_C'"));
+    check(HudBP.Class != nullptr);
+    HUDClass = HudBP.Class;
 }
