@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Engine/Canvas.h" 
+#include "PauseWidget.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/UserWidget.h"
 #include "CharacterHud.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class FYP_API ACharacterHud : public AHUD
 {
@@ -20,8 +21,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		UTexture2D* CrosshairTexture;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		TSubclassOf<UUserWidget> PauseMenuWidgetClass;
+
+
 public:
-	// Primary draw call for the HUD.
+	ACharacterHud();
 	virtual void DrawHUD() override;
-	
+	void openPauseMenu();
 };

@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Projectile.h"
 #include "PathPoint.h"
+#include "CharacterHud.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "PlayerCharacter.generated.h"
 
@@ -36,7 +37,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-		TSubclassOf<class AProjectile> ProjectileClass;
+		TSubclassOf<class AProjectile> ProjectileClass;	
+
 
 public:	
 	APlayerCharacter();
@@ -68,7 +70,10 @@ public:
 		void Teleport();
 
 	UFUNCTION()
-		void Recall();
+		void Recall();	
+	
+	UFUNCTION()
+		void Pause();
 
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FPCameraComponent;

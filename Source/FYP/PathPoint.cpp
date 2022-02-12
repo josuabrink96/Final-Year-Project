@@ -30,10 +30,6 @@ APathPoint::APathPoint()
 
 }
 
-APathPoint::~APathPoint() {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Garbage Collection."));
-}
-
 // Called when the game starts or when spawned
 void APathPoint::BeginPlay()
 {
