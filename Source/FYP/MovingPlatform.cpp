@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MovingPlatform.h"
 
-// Sets default values
+int AMovingPlatform::platformCount = 0;
+
 AMovingPlatform::AMovingPlatform()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -17,13 +15,15 @@ AMovingPlatform::AMovingPlatform()
 		PlatformMesh->SetStaticMesh(PlatformAsset.Object);
 		PlatformMesh->SetWorldScale3D(FVector(1.0f, 0.5f, 0.5f));
 	}
+
 }
 
 // Called when the game starts or when spawned
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	platformCount++;
+	thisPlatform = platformCount % 2;
 }
 
 // Called every frame
@@ -34,7 +34,14 @@ void AMovingPlatform::Tick(float DeltaTime)
 	float time = GetGameTimeSinceCreation();
 	float posX = FMath::Sin(time + DeltaTime) * 2;
 
-	location.X += posX;
+	if (thisPlatform) {
+		location.X += posX;
+	}
+	else {
+		location.X -= posX;
+	}
+
+
 	SetActorLocation(location);
 }
 
