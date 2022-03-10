@@ -82,6 +82,6 @@ public:
 		USkeletalMeshComponent* FPMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		FVector MuzzleOffset;
+		FVector AimOffset;
 
 };
