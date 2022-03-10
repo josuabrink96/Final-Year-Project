@@ -40,13 +40,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 		FPredictProjectilePathParams params;
 		FPredictProjectilePathResult result;
 
-		MuzzleOffset.Set(100.0f, 100.0f, 0.0f);
-		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-		FRotator MuzzleRotation = CameraRotation;
-		MuzzleRotation.Pitch += 10.0f;
+		AimOffset.Set(100.0f, 100.0f, 0.0f);
+		FVector AimLocation = CameraLocation + FTransform(CameraRotation).TransformVector(AimOffset);
+		FRotator AimRotation = CameraRotation;
+		AimRotation.Pitch += 10.0f;
 
-		params.StartLocation = MuzzleLocation;
-		params.LaunchVelocity = MuzzleRotation.Vector() * 2000.0f;
+		params.StartLocation = AimLocation;
+		params.LaunchVelocity = AimRotation.Vector() * 2000.0f;
 		params.MaxSimTime = 2.0f;
 
 		UWorld* World = GetWorld();
@@ -138,10 +138,10 @@ void APlayerCharacter::Fire()
 		trajectory.clear();
 
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
-		MuzzleOffset.Set(100.0f, 100.0f, 0.0f);
-		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-		FRotator MuzzleRotation = CameraRotation;
-		MuzzleRotation.Pitch += 10.0f;
+		AimOffset.Set(100.0f, 100.0f, 0.0f);
+		FVector AimLocation = CameraLocation + FTransform(CameraRotation).TransformVector(AimOffset);
+		FRotator AimRotation = CameraRotation;
+		AimRotation.Pitch += 10.0f;
 
 		UWorld* World = GetWorld();
 		if (World)
@@ -151,11 +151,11 @@ void APlayerCharacter::Fire()
 			SpawnParams.Instigator = GetInstigator();
 
 			// Spawn the projectile at the muzzle.
-			Projectile = World->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+			Projectile = World->SpawnActor<AProjectile>(ProjectileClass, AimLocation, AimRotation, SpawnParams);
 			if (Projectile)
 			{
 				// Set the projectile's initial trajectory.
-				FVector LaunchDirection = MuzzleRotation.Vector();
+				FVector LaunchDirection = AimRotation.Vector();
 				Projectile->FireInDirection(LaunchDirection);
 			}
 		}
