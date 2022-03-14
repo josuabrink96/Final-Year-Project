@@ -14,8 +14,10 @@ AEntrance::AEntrance()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> entranceAsset(TEXT("/Game/MyContent/Meshes/Entrance.Entrance"));
 	if (entranceAsset.Succeeded()) {
 		EntranceMesh->SetStaticMesh(entranceAsset.Object);
-		EntranceMesh->SetWorldScale3D(FVector(1.5f, 5.5f, 5.0f));
+		dimensions = EntranceMesh->GetStaticMesh()->GetBounds().BoxExtent * EntranceMesh->GetRelativeScale3D();
 	}
+
+	open = false;
 }
 
 // Called when the game starts or when spawned
@@ -29,12 +31,17 @@ void AEntrance::BeginPlay()
 void AEntrance::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	FVector doorLocation = GetActorLocation();
-	if (doorLocation.Z < 0) {
-		float RunningTime = GetGameTimeSinceCreation();
-		doorLocation.Z += RunningTime;
+	
+	if ((positionCounter < (dimensions.Z * 2) + 10) && open) {
+		positionCounter++;
+		doorLocation.Z--;
 		SetActorLocation(doorLocation);
 	}
 }
 
+int AEntrance::setOpen()
+{
+	open = true;
+	return 0;
+}

@@ -19,11 +19,19 @@ ABigRedButton::ABigRedButton()
 	}
 }
 
+int ABigRedButton::openDoor()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Opening Door."));
+	if (entrance != nullptr) {
+		entrance->setOpen();
+	}
+	return 0;
+}
+
 // Called when the game starts or when spawned
 void ABigRedButton::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

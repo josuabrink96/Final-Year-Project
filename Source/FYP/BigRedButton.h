@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Entrance.h"
 #include "BigRedButton.generated.h"
 
 UCLASS()
@@ -14,6 +15,7 @@ class FYP_API ABigRedButton : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABigRedButton();
+	int openDoor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,4 +30,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* BRBMesh;
+
+	UPROPERTY(EditAnywhere)
+		AEntrance* entrance;
+
+
 };
