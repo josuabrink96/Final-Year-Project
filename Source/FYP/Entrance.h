@@ -14,6 +14,7 @@ class FYP_API AEntrance : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AEntrance();
+	int setOpen();
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,4 +30,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* EntranceMesh;
 
+private:
+	FVector dimensions;
+	bool open;
+	int positionCounter;
 };

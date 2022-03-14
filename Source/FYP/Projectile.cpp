@@ -67,5 +67,7 @@ void AProjectile::FireInDirection(const FVector& ShootDirection)
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, OtherActor->GetName());
+	if (OtherActor->GetClass()->GetName() == "BigRedButton") {
+		Cast<ABigRedButton>(OtherActor)->openDoor();
+	}
 }
