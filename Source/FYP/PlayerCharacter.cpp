@@ -83,10 +83,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::Aim);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::Fire);
 
-	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &APlayerCharacter::Teleport);
 	PlayerInputComponent->BindAction("Recall", IE_Pressed, this, &APlayerCharacter::Recall);
 
 	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::Pause);
+
+	PlayerInputComponent->BindAction("QuickSave", IE_Pressed, this, &APlayerCharacter::QuickSave);
+	PlayerInputComponent->BindAction("QuickLoad", IE_Pressed, this, &APlayerCharacter::QuickLoad);
 }
 
 void APlayerCharacter::MoveForwardBack(float val)
@@ -162,14 +164,6 @@ void APlayerCharacter::Fire()
 	}
 }
 
-void APlayerCharacter::Teleport() {
-	if (status == Fired) {
-		this->SetActorLocation(Projectile->GetActorLocation());
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Teleported to ball."));
-		this->Recall();
-	}
-}
-
 void APlayerCharacter::Recall() {
 	if (status == Fired) {
 		status = Idle;
@@ -183,3 +177,16 @@ void APlayerCharacter::Pause() {
 	myHud->openPauseMenu();
 }
 
+void APlayerCharacter::QuickSave() {
+	UMySaveGame* SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	SaveGameInstance->PlayerLocation = this->GetActorLocation();
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("Quick Save"), 0);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Game Saved."));
+}
+
+void APlayerCharacter::QuickLoad() {
+	UMySaveGame* SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Quick Save"), 0));
+	this->SetActorLocation(SaveGameInstance->PlayerLocation);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Game Loaded."));
+}

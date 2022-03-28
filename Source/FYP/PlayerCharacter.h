@@ -7,6 +7,7 @@
 #include "Projectile.h"
 #include "PathPoint.h"
 #include "CharacterHud.h"
+#include "MySaveGame.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -67,13 +68,16 @@ public:
 		void Aim();
 
 	UFUNCTION()
-		void Teleport();
-
-	UFUNCTION()
 		void Recall();	
 	
 	UFUNCTION()
 		void Pause();
+
+	UFUNCTION()
+		void QuickSave();
+
+	UFUNCTION()
+		void QuickLoad();
 
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FPCameraComponent;
