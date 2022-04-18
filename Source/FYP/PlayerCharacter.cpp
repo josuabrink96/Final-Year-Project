@@ -1,4 +1,5 @@
 #include "PlayerCharacter.h"
+#include "GravityMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -17,8 +18,12 @@ APlayerCharacter::APlayerCharacter()
 	FPMesh->SetupAttachment(FPCameraComponent);
 	FPMesh->bCastDynamicShadow = false;
 	FPMesh->CastShadow = false;
-
 	GetMesh()->SetOwnerNoSee(true);
+}
+
+UGravityMovementComponent* APlayerCharacter::GetGravityMovementComponent()
+{
+	return Cast<UGravityMovementComponent>(GetMovementComponent());
 }
 
 // Called when the game starts or when spawned
@@ -53,14 +58,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 		if (World) 
 		{
 			UGameplayStatics::PredictProjectilePath(World, params, result);
-			pos.clear();
+			pos.Empty();
 			for (const auto& p : result.PathData) {
-				pos.emplace_back(p.Location);
+				pos.Add(p.Location);
 			}
-
 			int i = 0;
 			for (const auto& t : trajectory) {
-				t->SetActorLocation(pos.at(i));
+				t->SetActorLocation(pos[i]);
 				i++;
 			}
 		}
@@ -82,6 +86,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::Aim);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::Fire);
+
+	PlayerInputComponent->BindAction("TestRotate", IE_Pressed, this, &APlayerCharacter::TestRotate);
 
 	PlayerInputComponent->BindAction("Recall", IE_Pressed, this, &APlayerCharacter::Recall);
 
@@ -123,7 +129,7 @@ void APlayerCharacter::Aim() {
 		if (World) {
 			for (auto& p : pos) {
 				PathPoint = World->SpawnActor<APathPoint>(p, CameraRotation);
-				trajectory.emplace_back(PathPoint);
+				trajectory.Add(PathPoint);
 			}
 		}
 	}
@@ -137,7 +143,7 @@ void APlayerCharacter::Fire()
 		for (auto& t : trajectory) {
 			t->Destroy();
 		}
-		trajectory.clear();
+		trajectory.Empty();
 
 		GetActorEyesViewPoint(CameraLocation, CameraRotation);
 		AimOffset.Set(100.0f, 100.0f, 0.0f);
@@ -189,4 +195,8 @@ void APlayerCharacter::QuickLoad() {
 	SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Quick Save"), 0));
 	this->SetActorLocation(SaveGameInstance->PlayerLocation);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Game Loaded."));
+}
+
+void APlayerCharacter::TestRotate() {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()->GetClass()->GetName());
 }
