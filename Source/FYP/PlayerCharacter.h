@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Projectile.h"
 #include "PathPoint.h"
 #include "CharacterHud.h"
 #include "MySaveGame.h"
+#include "GravityMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -25,8 +27,8 @@ private:
 		Fired,
 	};
 
-	std::vector<APathPoint*> trajectory;
-	std::vector<FVector> pos;
+	TArray<APathPoint*> trajectory;
+	TArray<FVector> pos;
 	FVector CameraLocation;
 	FRotator CameraRotation;
 	AProjectile* Projectile;
@@ -40,9 +42,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 		TSubclassOf<class AProjectile> ProjectileClass;	
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Character")
+		UGravityMovementComponent* GetGravityMovementComponent();
 
 public:	
 	APlayerCharacter();
+
+	APlayerCharacter(const FObjectInitializer& ObjectInitializer)
+		: Super(ObjectInitializer.SetDefaultSubobjectClass<UGravityMovementComponent>(ACharacter::CharacterMovementComponentName)) {};
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -78,6 +85,9 @@ public:
 
 	UFUNCTION()
 		void QuickLoad();
+
+	UFUNCTION()
+		void TestRotate();
 
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FPCameraComponent;
