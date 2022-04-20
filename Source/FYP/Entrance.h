@@ -14,7 +14,7 @@ class FYP_API AEntrance : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AEntrance();
-	int setOpen();
+	int setOpen(const bool);
 
 protected:
 	// Called when the game starts or when spawned

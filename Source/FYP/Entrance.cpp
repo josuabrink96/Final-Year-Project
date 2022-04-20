@@ -33,15 +33,24 @@ void AEntrance::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	FVector doorLocation = GetActorLocation();
 	
-	if ((positionCounter < (dimensions.Z * 2) + 10) && open) {
-		positionCounter++;
-		doorLocation.Z--;
-		SetActorLocation(doorLocation);
+	if (open) {
+		if ((positionCounter < (dimensions.Z * 2) + 10)) {
+			positionCounter++;
+			doorLocation.Z--;
+			SetActorLocation(doorLocation);
+		}
+	}
+	else {
+		if (positionCounter > 0) {
+			positionCounter--;
+			doorLocation.Z++;
+			SetActorLocation(doorLocation);
+		}
 	}
 }
 
-int AEntrance::setOpen()
+int AEntrance::setOpen(const bool isOpen)
 {
-	open = true;
+	open = isOpen;
 	return 0;
 }
