@@ -23,7 +23,7 @@ int ABigRedButton::openDoor()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Opening Door."));
 	if (entrance != nullptr) {
-		entrance->setOpen();
+		entrance->setOpen(true);
 	}
 	return 0;
 }
