@@ -41,7 +41,6 @@ void APressurePlate::Tick(float DeltaTime)
 
 int APressurePlate::closeDoor()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Closing Door."));
 	if (entrance != nullptr) {
 		entrance->setOpen(false);
 	}
